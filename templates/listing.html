@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}{{ item.school }} {{ item.title }} | おきなわ制服マーケット{% endblock %}
+
+{% block meta_description %}{{ description_excerpt }}。{{ item.school }}の制服（{{ item.type }}・{{ item.size }}・{{ condition_short }}）を{{ price_str }}でお譲りします。おきなわ制服マーケット。{% endblock %}
+
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ item.title }} - {{ item.school }} | おきなわ制服マーケット{% endblock %}
+{% block og_description %}{{ description_excerpt }}{% endblock %}
+{% block og_url %}{{ base_url }}/listing/{{ item.id }}{% endblock %}
+{% block canonical %}{{ base_url }}/listing/{{ item.id }}{% endblock %}
+
+{% block nav_search %}active{% endblock %}
+
+{% block extra_meta %}
+<meta property="article:published_time" content="{{ item.created_at }}">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ item.title }}",
+  "description": "{{ description_excerpt }}",
+  "offers": {
+    "@type": "Offer",
+    "price": "{{ item.price }}",
+    "priceCurrency": "JPY",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<main class="main">
+
+  <!-- パンくずリスト -->
+  <nav class="breadcrumb" aria-label="パンくずリスト">
+    <a href="/">ホーム</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="/search">出品一覧</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="/search?school={{ item.school | urlencode }}">{{ item.school }}</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current">{{ item.title[:30] }}{% if item.title|length > 30 %}...{% endif %}</span>
+  </nav>
+
+  <div class="detail-layout">
+
+    <!-- 左: 画像 -->
+    <div class="detail-images">
+      <div class="detail-main-image" id="mainImage">
+        {% if item.images and item.images[0] %}
+          <img src="{{ item.images[0] }}" alt="{{ item.title }}" id="mainImg">
+        {% else %}
+          <span class="detail-emoji">{{ {'夏服': '👔', '冬服': '🧥', '体操': '🩱', 'ブレザー': '🧣'}.get(item.type[:2], '👘') }}</span>
+        {% endif %}
+      </div>
+      {% if item.images and item.images|length > 1 %}
+      <div class="detail-thumbs">
+        {% for img in item.images %}
+        <div class="detail-thumb {% if loop.first %}active{% endif %}" onclick="switchImage('{{ img }}', this)">
+          <img src="{{ img }}" alt="画像{{ loop.index }}">
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <!-- シェアボタン -->
+      <div class="share-box">
+        <p class="share-label">📤 この出品をシェア</p>
+        <div class="share-buttons">
+          <button class="share-btn share-copy" onclick="copyURL()">🔗 URLをコピー</button>
+          <a class="share-btn share-x" href="https://twitter.com/intent/tweet?text={{ item.title | urlencode }}&url={{ (base_url + '/listing/' + item.id|string) | urlencode }}" target="_blank" rel="noopener">𝕏 でシェア</a>
+          <a class="share-btn share-line" href="https://social-plugins.line.me/lineit/share?url={{ (base_url + '/listing/' + item.id|string) | urlencode }}" target="_blank" rel="noopener">LINE</a>
+        </div>
+        <div class="copy-toast" id="copyToast">✅ URLをコピーしました</div>
+      </div>
+    </div>
+
+    <!-- 右: 詳細情報 -->
+    <div class="detail-info">
+
+      <!-- 学校バッジ -->
+      <div class="detail-school-badge">
+        <a href="/search?school={{ item.school | urlencode }}" class="school-link">{{ item.school }}</a>
+      </div>
+
+      <!-- タイトル -->
+      <h1 class="detail-title">{{ item.title }}</h1>
+
+      <!-- 価格 -->
+      <div class="detail-price {% if item.price_type == 'free' or item.price == 0 %}free{% endif %}">
+        {{ price_str }}
+      </div>
+
+      <!-- タグ -->
+      <div class="detail-tags">
+        <span class="tag">{{ item.type }}</span>
+        <span class="tag">{{ item.gender }}</span>
+        <span class="tag">サイズ: {{ item.size }}</span>
+        <span class="tag condition-{{ {'新品同様': 'new', '良好': 'good', '普通': 'fair', '使用感あり': 'used'}.get(condition_short, '') }}">{{ condition_short }}</span>
+      </div>
+
+      <!-- 説明 -->
+      <div class="detail-desc-box">
+        <h2 class="detail-section-title">📝 説明</h2>
+        <p class="detail-desc">{{ item.description | replace('\n', '<br>') | safe }}</p>
+      </div>
+
+      <!-- 情報テーブル -->
+      <div class="detail-table">
+        <div class="detail-row">
+          <span class="detail-label">学校</span>
+          <span class="detail-value">
+            <a href="/search?school={{ item.school | urlencode }}" class="school-link">{{ item.school }}</a>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">種類</span>
+          <span class="detail-value">
+            <a href="/search?type={{ item.type | urlencode }}" class="filter-link">{{ item.type }}</a>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">性別</span>
+          <span class="detail-value">{{ item.gender }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">サイズ</span>
+          <span class="detail-value">
+            <a href="/search?size={{ item.size | urlencode }}" class="filter-link">{{ item.size }}</a>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">状態</span>
+          <span class="detail-value">{{ item.condition }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">引き渡し</span>
+          <span class="detail-value">{{ item.delivery | join('・') if item.delivery else '要相談' }}</span>
+        </div>
+        {% if item.location %}
+        <div class="detail-row">
+          <span class="detail-label">場所</span>
+          <span class="detail-value">{{ item.location }}</span>
+        </div>
+        {% endif %}
+        <div class="detail-row">
+          <span class="detail-label">投稿日</span>
+          <span class="detail-value" id="postedAt" data-date="{{ item.created_at }}">{{ item.created_at[:10] }}</span>
+        </div>
+      </div>
+
+      <!-- 連絡先ボックス -->
+      <div class="contact-card">
+        <div class="contact-card-header">
+          <span class="contact-avatar">👤</span>
+          <span class="contact-name">{{ item.name }}</span>
+        </div>
+        <p class="contact-note">この出品に興味がある方は下記の方法でご連絡ください</p>
+        <div class="contact-method-badge">{{ item.contact_method }}</div>
+        <div class="contact-info-display">{{ item.contact_info }}</div>
+        <p class="contact-warning">⚠️ 個人情報の取り扱いにはご注意ください</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 関連出品 -->
+  {% if related %}
+  <section class="related-section">
+    <h2 class="section-title">{{ item.school }}の他の出品</h2>
+    <div class="listings-grid">
+      {% for r in related %}
+      {% set r_price = '無料' if (r.price_type == 'free' or r.price == 0) else '¥' + '{:,}'.format(r.price) %}
+      {% set r_cond = r.condition.split('（')[0].strip() %}
+      <a href="/listing/{{ r.id }}" class="listing-card listing-card-link">
+        <div class="card-image-wrap">
+          {% if r.images and r.images[0] %}
+            <img src="{{ r.images[0] }}" alt="{{ r.title }}" loading="lazy">
+          {% else %}
+            <span>👘</span>
+          {% endif %}
+          <span class="card-badge {% if r.price_type == 'free' or r.price == 0 %}free{% endif %}">{{ r_price }}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-school">{{ r.school }}</div>
+          <div class="card-title">{{ r.title }}</div>
+          <div class="card-meta">
+            <span class="tag">{{ r.size }}</span>
+            <span class="tag">{{ r.gender }}</span>
+            <span class="tag">{{ r_cond }}</span>
+          </div>
+          <div class="card-footer">
+            <span class="card-price {% if r.price_type == 'free' or r.price == 0 %}free{% endif %}">{{ r_price }}</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:24px;">
+      <a href="/search?school={{ item.school | urlencode }}" class="btn btn-outline">{{ item.school }}の出品をすべて見る</a>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- 注意事項 -->
+  <div class="notice-box" style="max-width:100%;margin-top:32px;">
+    <h3>⚠️ ご利用にあたって</h3>
+    <ul>
+      <li>個人間の取引です。トラブルは当事者間で解決をお願いします</li>
+      <li>制服の転売目的での利用はお断りしています</li>
+    </ul>
+  </div>
+
+</main>
+
+<script>
+function switchImage(src, thumb) {
+  document.getElementById('mainImg').src = src;
+  document.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
+}
+
+function copyURL() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const toast = document.getElementById('copyToast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  });
+}
+
+// Format relative date
+const dateEl = document.getElementById('postedAt');
+if (dateEl) {
+  const d = new Date(dateEl.dataset.date);
+  const diff = Math.floor((new Date() - d) / 86400000);
+  if (diff === 0) dateEl.textContent = '今日';
+  else if (diff === 1) dateEl.textContent = '昨日';
+  else if (diff < 7) dateEl.textContent = diff + '日前';
+  else dateEl.textContent = d.toLocaleDateString('ja-JP');
+}
+</script>
+{% endblock %}

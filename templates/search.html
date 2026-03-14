@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}{% if seo_title != '出品一覧' %}{{ seo_title }}の制服 | {% endif %}出品一覧 | おきなわ制服マーケット{% endblock %}
+
+{% block meta_description %}{% if seo_title != '出品一覧' %}「{{ seo_title }}」の検索結果。{% endif %}沖縄の学校制服お下がり一覧。学校名・種類・サイズ・価格で絞り込み検索できます。{% endblock %}
+
+{% block og_title %}{% if seo_title != '出品一覧' %}{{ seo_title }}の制服 - {% endif %}出品一覧 | おきなわ制服マーケット{% endblock %}
+{% block og_url %}{{ base_url }}/search{% endblock %}
+
+{% block nav_search %}active{% endblock %}
+
+{% block content %}
+<main class="main"
+  data-q="{{ q }}"
+  data-school="{{ school }}"
+  data-type="{{ type_ }}"
+  data-size="{{ size }}"
+  data-price="{{ price }}"
+  data-condition="{{ condition }}"
+  data-sort="{{ sort }}">
+
+  <!-- ページヘッダー -->
+  <div class="search-page-header">
+    <div class="search-hero-bar">
+      <input type="text" id="searchInput" class="search-input-large" placeholder="学校名・制服の種類で検索..." value="{{ q }}">
+      <button class="btn btn-primary btn-large" onclick="doSearch()">検索</button>
+    </div>
+  </div>
+
+  <!-- フィルターバー -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <select id="filterSchool" class="filter-select" onchange="applyFilters()">
+        <option value="">すべての学校</option>
+        {% for s in schools %}
+        <option value="{{ s }}" {% if s == school %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      <select id="filterType" class="filter-select" onchange="applyFilters()">
+        <option value="">すべての種類</option>
+        <option value="夏服" {% if '夏服' in type_ %}selected{% endif %}>夏服</option>
+        <option value="冬服" {% if '冬服' in type_ %}selected{% endif %}>冬服</option>
+        <option value="体操服" {% if '体操服' in type_ %}selected{% endif %}>体操服</option>
+        <option value="ブレザー" {% if 'ブレザー' in type_ %}selected{% endif %}>ブレザー</option>
+        <option value="上下セット" {% if '上下セット' in type_ %}selected{% endif %}>上下セット</option>
+        <option value="フルセット" {% if 'フルセット' in type_ %}selected{% endif %}>フルセット</option>
+      </select>
+      <select id="filterSize" class="filter-select" onchange="applyFilters()">
+        <option value="">すべてのサイズ</option>
+        {% for sz in ['SS', 'S', 'M', 'L', 'XL', 'XXL'] %}
+        <option value="{{ sz }}" {% if sz == size %}selected{% endif %}>{{ sz }}</option>
+        {% endfor %}
+      </select>
+      <select id="filterPrice" class="filter-select" onchange="applyFilters()">
+        <option value="">すべての価格</option>
+        <option value="free" {% if price == 'free' %}selected{% endif %}>無料のみ</option>
+        <option value="under1000" {% if price == 'under1000' %}selected{% endif %}>〜1,000円</option>
+        <option value="under3000" {% if price == 'under3000' %}selected{% endif %}>〜3,000円</option>
+        <option value="under5000" {% if price == 'under5000' %}selected{% endif %}>〜5,000円</option>
+      </select>
+      <select id="filterCondition" class="filter-select" onchange="applyFilters()">
+        <option value="">すべての状態</option>
+        <option value="新品同様" {% if condition == '新品同様' %}selected{% endif %}>新品同様</option>
+        <option value="良好" {% if condition == '良好' %}selected{% endif %}>良好</option>
+        <option value="普通" {% if condition == '普通' %}selected{% endif %}>普通</option>
+        <option value="使用感あり" {% if condition == '使用感あり' %}selected{% endif %}>使用感あり</option>
+      </select>
+    </div>
+    <div class="filter-right">
+      <button class="btn-clear" onclick="clearFilters()">✕ リセット</button>
+      <select id="sortBy" class="filter-select" onchange="applyFilters()">
+        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>新着順</option>
+        <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>価格が安い順</option>
+        <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>価格が高い順</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- アクティブフィルター表示 -->
+  <div class="active-filters" id="activeFilters"></div>
+
+  <!-- 結果ヘッダー -->
+  <div class="results-header">
+    <h1 class="section-title" id="resultsTitle">
+      {% if seo_title != '出品一覧' %}「{{ seo_title }}」の検索結果{% else %}出品一覧{% endif %}
+    </h1>
+    <span class="results-count" id="resultsCount"></span>
+  </div>
+
+  <!-- グリッド -->
+  <div class="listings-grid" id="listingsGrid">
+    <div class="loading-state"><div class="spinner"></div><p>読み込み中...</p></div>
+  </div>
+
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="empty-icon">🔍</div>
+    <h3>出品が見つかりませんでした</h3>
+    <p>検索条件を変えてお試しください</p>
+    <button class="btn btn-outline" onclick="clearFilters()">フィルターをリセット</button>
+  </div>
+
+  <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
+    <button class="btn btn-outline btn-large" onclick="loadMore()">もっと見る</button>
+  </div>
+
+</main>
+
+<script src="/static/js/search.js"></script>
+{% endblock %}

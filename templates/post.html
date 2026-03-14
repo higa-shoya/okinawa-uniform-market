@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}制服を出品する | おきなわ制服マーケット{% endblock %}
+{% block meta_description %}沖縄の学校制服を出品しましょう。無料でかんたんに出品できます。{% endblock %}
+{% block og_title %}制服を出品する | おきなわ制服マーケット{% endblock %}
+{% block nav_post %}active{% endblock %}
+
+{% block content %}
+<main class="main">
+  <div class="page-header">
+    <h1 class="page-title">制服を出品する</h1>
+    <p class="page-sub">必要な情報を入力して出品しましょう</p>
+  </div>
+
+  <div class="form-container">
+    <form id="postForm" onsubmit="submitPost(event)">
+
+      <!-- 画像アップロード -->
+      <div class="form-section">
+        <h2 class="form-section-title">📸 写真</h2>
+        <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('imageInput').click()">
+          <div class="upload-placeholder" id="uploadPlaceholder">
+            <div class="upload-icon">📷</div>
+            <p>クリックして写真を追加</p>
+            <p class="upload-sub">最大4枚まで追加できます</p>
+          </div>
+          <div class="image-previews" id="imagePreviews"></div>
+        </div>
+        <input type="file" id="imageInput" accept="image/*" multiple style="display:none" onchange="handleImageUpload(event)">
+      </div>
+
+      <!-- 学校情報 -->
+      <div class="form-section">
+        <h2 class="form-section-title">🏫 学校・制服情報</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label required">学校名</label>
+            <select name="school" id="schoolSelect" class="form-input" required onchange="updateSchoolOther()">
+              <option value="">選択してください</option>
+              <optgroup label="那覇市">
+                <option>那覇高校</option>
+                <option>首里高校</option>
+                <option>那覇国際高校</option>
+                <option>開邦高校</option>
+                <option>那覇西高校</option>
+              </optgroup>
+              <optgroup label="中部">
+                <option>浦添高校</option>
+                <option>宜野湾高校</option>
+                <option>沖縄市立コザ高校</option>
+                <option>中部農林高校</option>
+                <option>美里高校</option>
+                <option>北中城高校</option>
+                <option>北谷高校</option>
+              </optgroup>
+              <optgroup label="北部">
+                <option>名護高校</option>
+                <option>辺土名高校</option>
+                <option>本部高校</option>
+                <option>北部農林高校</option>
+                <option>宜野座高校</option>
+              </optgroup>
+              <optgroup label="南部">
+                <option>糸満高校</option>
+                <option>豊見城高校</option>
+                <option>南部工業高校</option>
+                <option>南部農林高校</option>
+                <option>与那原高校</option>
+              </optgroup>
+              <optgroup label="私立">
+                <option>沖縄尚学高校</option>
+                <option>昭和薬科大学附属高校</option>
+                <option>興南高校</option>
+                <option>沖縄カトリック高校</option>
+                <option>球陽高校</option>
+                <option>向陽高校</option>
+                <option>石川高校</option>
+                <option>美来工科高校</option>
+              </optgroup>
+              <optgroup label="中学校">
+                <option>那覇中学校</option>
+                <option>首里中学校</option>
+                <option>浦添中学校</option>
+                <option>名護中学校</option>
+                <option>その他中学校</option>
+              </optgroup>
+              <option value="other">その他（直接入力）</option>
+            </select>
+          </div>
+          <div class="form-group" id="schoolOtherGroup" style="display:none">
+            <label class="form-label">学校名（直接入力）</label>
+            <input type="text" name="school_other" class="form-input" placeholder="学校名を入力してください">
+          </div>
+          <div class="form-group">
+            <label class="form-label required">制服の種類</label>
+            <select name="type" class="form-input" required>
+              <option value="">選択してください</option>
+              <option>夏服（上下セット）</option>
+              <option>夏服（上のみ）</option>
+              <option>夏服（下のみ）</option>
+              <option>冬服（上下セット）</option>
+              <option>冬服（上のみ）</option>
+              <option>冬服（下のみ）</option>
+              <option>体操服（上下セット）</option>
+              <option>体操服（上のみ）</option>
+              <option>体操服（下のみ）</option>
+              <option>ブレザー</option>
+              <option>上下フルセット</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label required">性別</label>
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="gender" value="男子用" required><span>男子用</span></label>
+              <label class="radio-label"><input type="radio" name="gender" value="女子用"><span>女子用</span></label>
+              <label class="radio-label"><input type="radio" name="gender" value="共通"><span>共通</span></label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label required">サイズ</label>
+            <select name="size" class="form-input" required>
+              <option value="">選択してください</option>
+              <option>SS</option><option>S</option><option>M</option>
+              <option>L</option><option>XL</option><option>XXL</option>
+              <option>その他（詳細に記載）</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label required">状態</label>
+            <select name="condition" class="form-input" required>
+              <option value="">選択してください</option>
+              <option>新品同様（ほぼ未使用）</option>
+              <option>良好（使用感ほぼなし）</option>
+              <option>普通（若干の使用感あり）</option>
+              <option>使用感あり（目立つ汚れや傷あり）</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 価格 -->
+      <div class="form-section">
+        <h2 class="form-section-title">💰 価格</h2>
+        <div class="form-group">
+          <div class="price-options">
+            <label class="price-option">
+              <input type="radio" name="price_type" value="free" onchange="togglePrice()">
+              <div class="price-opt-inner"><span class="price-opt-icon">🎁</span><span>無料で譲る</span></div>
+            </label>
+            <label class="price-option">
+              <input type="radio" name="price_type" value="paid" onchange="togglePrice()" checked>
+              <div class="price-opt-inner"><span class="price-opt-icon">💴</span><span>価格を設定する</span></div>
+            </label>
+          </div>
+          <div class="price-input-wrap" id="priceInputWrap">
+            <span class="price-symbol">¥</span>
+            <input type="number" name="price" id="priceInput" class="form-input price-input" placeholder="0" min="0" max="50000">
+          </div>
+        </div>
+      </div>
+
+      <!-- 詳細説明 -->
+      <div class="form-section">
+        <h2 class="form-section-title">📝 詳細</h2>
+        <div class="form-group">
+          <label class="form-label required">タイトル</label>
+          <input type="text" name="title" id="titleInput" class="form-input" placeholder="例：那覇高校 夏服上下セット Mサイズ" required maxlength="60" oninput="document.getElementById('titleCount').textContent=this.value.length">
+          <div class="char-count"><span id="titleCount">0</span>/60</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label required">説明文</label>
+          <textarea name="description" class="form-input form-textarea" placeholder="制服の状態・サイズ感・付属品・引き渡し方法など、詳しく書いてください" required rows="6" maxlength="500" oninput="document.getElementById('descCount').textContent=this.value.length"></textarea>
+          <div class="char-count"><span id="descCount">0</span>/500</div>
+        </div>
+      </div>
+
+      <!-- 連絡先 -->
+      <div class="form-section">
+        <h2 class="form-section-title">📱 連絡先</h2>
+        <p class="form-note">※ 連絡先は出品後、興味を持った方に表示されます。個人情報の取り扱いにご注意ください。</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label required">お名前（ニックネーム可）</label>
+            <input type="text" name="name" class="form-input" placeholder="例：那覇の母" required maxlength="30">
+          </div>
+          <div class="form-group">
+            <label class="form-label required">連絡方法</label>
+            <select name="contact_method" class="form-input" required>
+              <option value="">選択してください</option>
+              <option>LINE（IDを記載）</option>
+              <option>メール</option>
+              <option>Twitter/X（@を記載）</option>
+              <option>電話（番号を記載）</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column: 1/-1">
+            <label class="form-label required">連絡先情報</label>
+            <input type="text" name="contact_info" class="form-input" placeholder="例：LINE ID: okinawa_mama" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">引き渡し方法</label>
+            <div class="checkbox-group">
+              <label class="check-label"><input type="checkbox" name="delivery" value="手渡し"><span>手渡し</span></label>
+              <label class="check-label"><input type="checkbox" name="delivery" value="郵送"><span>郵送</span></label>
+              <label class="check-label"><input type="checkbox" name="delivery" value="宅配便"><span>宅配便</span></label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">引き渡し場所（手渡しの場合）</label>
+            <input type="text" name="location" class="form-input" placeholder="例：那覇市内、那覇バスターミナル付近">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-submit">
+        <button type="button" class="btn btn-outline" onclick="history.back()">キャンセル</button>
+        <button type="submit" class="btn btn-primary btn-large">出品する</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<!-- 成功モーダル -->
+<div class="modal-overlay" id="successModal" style="display:none;">
+  <div class="modal success-modal">
+    <div class="success-icon">🎉</div>
+    <h2>出品が完了しました！</h2>
+    <p>ご出品ありがとうございます。<br>必要な方への橋渡しができれば幸いです。</p>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="location.href='/'">ホームへ戻る</button>
+      <button class="btn btn-outline" onclick="location.href='/post'">続けて出品する</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/post.js"></script>
+{% endblock %}

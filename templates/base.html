@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}おきなわ制服マーケット | 沖縄の学校制服お下がり交換{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}沖縄県の学校制服を次の人へ。卒業後の制服を出品して必要な方に届けましょう。無料で利用できる沖縄の制服お下がりプラットフォームです。{% endblock %}">
+  <meta name="keywords" content="沖縄,制服,お下がり,学校,高校,中学,交換,譲渡,おきなわ">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:site_name" content="おきなわ制服マーケット">
+  <meta property="og:title" content="{% block og_title %}おきなわ制服マーケット{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}沖縄県の学校制服お下がり交換プラットフォーム。無料で出品・検索できます。{% endblock %}">
+  <meta property="og:image" content="{% block og_image %}/static/images/og-default.png{% endblock %}">
+  <meta property="og:url" content="{% block og_url %}{% endblock %}">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="{% block canonical %}{% endblock %}">
+  {% block extra_meta %}{% endblock %}
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="logo">
+      <span class="logo-icon">👘</span>
+      <span class="logo-text">おきなわ<br><small>制服マーケット</small></span>
+    </a>
+    <nav class="header-nav">
+      <a href="/" class="nav-link {% block nav_home %}{% endblock %}">ホーム</a>
+      <a href="/search" class="nav-link {% block nav_search %}{% endblock %}">出品一覧</a>
+      <a href="/post" class="nav-link {% block nav_post %}{% endblock %}">出品する</a>
+    </nav>
+    <div class="header-actions">
+      <button class="btn btn-outline" onclick="location.href='/post'">＋ 出品する</button>
+    </div>
+  </div>
+</header>
+
+{% block content %}{% endblock %}
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="logo-icon">👘</span>
+      <span>おきなわ制服マーケット</span>
+    </div>
+    <p class="footer-desc">沖縄県の学校制服をつなぐプラットフォーム</p>
+    <div class="footer-links">
+      <a href="/">ホーム</a>
+      <a href="/search">出品一覧</a>
+      <a href="/post">出品する</a>
+    </div>
+    <p class="footer-copy">© 2025 おきなわ制服マーケット</p>
+  </div>
+</footer>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

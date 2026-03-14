@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: okinawa-uniform-market
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: BASE_URL
+        fromService:
+          type: web
+          name: okinawa-uniform-market
+          property: host
+    disk:
+      name: data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1

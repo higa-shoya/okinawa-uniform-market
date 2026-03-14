@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}ページが見つかりません | おきなわ制服マーケット{% endblock %}
+{% block content %}
+<main class="main" style="text-align:center;padding:80px 20px;">
+  <div style="font-size:80px;margin-bottom:24px;">🔍</div>
+  <h1 style="font-size:28px;margin-bottom:12px;">ページが見つかりません</h1>
+  <p style="color:var(--text-muted);margin-bottom:32px;">このページは削除されたか、URLが間違っている可能性があります。</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <a href="/" class="btn btn-primary">ホームへ戻る</a>
+    <a href="/search" class="btn btn-outline">出品一覧を見る</a>
+  </div>
+</main>
+{% endblock %}

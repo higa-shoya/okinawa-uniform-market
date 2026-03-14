@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}おきなわ制服マーケット | 沖縄の学校制服お下がり交換{% endblock %}
+{% block nav_home %}active{% endblock %}
+
+{% block content %}
+
+<!-- ヒーローセクション -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">🌺 沖縄県の学校制服専門</div>
+    <h1 class="hero-title">制服を次の人へ<br>つなごう</h1>
+    <p class="hero-sub">卒業後の制服をお下がりとして<br>必要な人に届けましょう</p>
+    <div class="hero-search">
+      <input type="text" id="heroSearch" placeholder="学校名・制服の種類で検索..." class="search-input-large"
+             onkeydown="if(event.key==='Enter') doSearch()">
+      <button class="btn btn-primary btn-large" onclick="doSearch()">検索</button>
+    </div>
+    <div class="hero-tags">
+      {% for s in ['那覇高校', '首里高校', '浦添高校', '宜野湾高校', '沖縄尚学高校', '昭和薬科大学附属高校'] %}
+      <a href="/search?school={{ s | urlencode }}" class="tag-link">{{ s }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-card-stack">
+      <div class="mini-card mc1">
+        <div class="mc-school">那覇高校</div>
+        <div class="mc-type">夏服 上下セット</div>
+        <div class="mc-price">¥2,000</div>
+      </div>
+      <div class="mini-card mc2">
+        <div class="mc-school">首里高校</div>
+        <div class="mc-type">冬服 ブレザー</div>
+        <div class="mc-price">無料</div>
+      </div>
+      <div class="mini-card mc3">
+        <div class="mc-school">浦添高校</div>
+        <div class="mc-type">体操服セット</div>
+        <div class="mc-price">¥1,500</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 統計バー -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num">{{ stats.listings }}</span>
+    <span class="stat-label">出品中</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">{{ stats.schools }}</span>
+    <span class="stat-label">対応学校数</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">{{ stats.transactions }}</span>
+    <span class="stat-label">取引完了</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">無料</span>
+    <span class="stat-label">利用料金</span>
+  </div>
+</div>
+
+<!-- メインコンテンツ -->
+<main class="main">
+
+  <!-- 結果ヘッダー -->
+  <div class="results-header">
+    <h2 class="section-title">新着出品</h2>
+    <a href="/search" class="results-count" style="text-decoration:none;">すべて見る →</a>
+  </div>
+
+  <!-- 出品グリッド（サーバーサイドレンダリング） -->
+  <div class="listings-grid">
+    {% for item in listings %}
+    {% set isFree = item.price_type == 'free' or item.price == 0 %}
+    {% set priceStr = '無料' if isFree else '¥' + '{:,}'.format(item.price) %}
+    {% set cond = item.condition.split('（')[0].strip() %}
+    {% set emoji = {'夏': '👔', '冬': '🧥', '体': '🩱', 'ブ': '🧣'}.get(item.type[0], '👘') %}
+    <a href="/listing/{{ item.id }}" class="listing-card listing-card-link">
+      <div class="card-image-wrap">
+        {% if item.images and item.images[0] %}
+          <img src="{{ item.images[0] }}" alt="{{ item.title }}" loading="lazy">
+        {% else %}
+          <span>{{ emoji }}</span>
+        {% endif %}
+        <span class="card-badge {% if isFree %}free{% endif %}">{{ priceStr }}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-school">{{ item.school }}</div>
+        <div class="card-title">{{ item.title }}</div>
+        <div class="card-meta">
+          <span class="tag">{{ item.size }}</span>
+          <span class="tag">{{ item.gender }}</span>
+          <span class="tag">{{ cond }}</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-price {% if isFree %}free{% endif %}">{{ priceStr }}</span>
+          <span class="card-date">{{ item.created_at[:10] }}</span>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <div style="text-align:center;margin-top:32px;">
+    <a href="/search" class="btn btn-outline btn-large">すべての出品を見る（{{ stats.listings }}件）</a>
+  </div>
+
+</main>
+
+<!-- 使い方セクション -->
+<section class="how-to">
+  <h2 class="section-title center">使い方</h2>
+  <div class="how-to-grid">
+    <div class="how-to-card">
+      <div class="how-icon">📸</div>
+      <h3>写真を撮る</h3>
+      <p>制服の写真を撮って、状態・サイズ・学校名を入力するだけ</p>
+    </div>
+    <div class="how-to-card">
+      <div class="how-icon">📋</div>
+      <h3>出品する</h3>
+      <p>値段（無料でもOK!）を設定して出品。連絡先を記載して取引</p>
+    </div>
+    <div class="how-to-card">
+      <div class="how-icon">🤝</div>
+      <h3>受け渡し</h3>
+      <p>出品者と連絡を取り合い、手渡し・郵送で受け渡し完了</p>
+    </div>
+  </div>
+</section>
+
+<!-- 学校別カテゴリ -->
+<section class="category-section">
+  <div class="main">
+    <h2 class="section-title">学校から探す</h2>
+    <div class="school-grid">
+      {% for s in schools[:18] %}
+      <a href="/search?school={{ s | urlencode }}" class="school-chip">{{ s }}</a>
+      {% endfor %}
+      <a href="/search" class="school-chip school-chip-more">すべて見る →</a>
+    </div>
+  </div>
+</section>
+
+<!-- 注意事項 -->
+<section class="notice-section">
+  <div class="notice-box">
+    <h3>⚠️ ご利用にあたって</h3>
+    <ul>
+      <li>個人間の取引となります。トラブルは当事者間で解決をお願いします</li>
+      <li>制服の転売目的での出品はお断りしています</li>
+      <li>個人情報（住所・電話番号）の取り扱いには十分ご注意ください</li>
+      <li>このサービスは地域の助け合いを目的とした非営利サービスです</li>
+    </ul>
+  </div>
+</section>
+
+<script>
+function doSearch() {
+  const q = document.getElementById('heroSearch').value.trim();
+  if (q) {
+    location.href = '/search?q=' + encodeURIComponent(q);
+  } else {
+    location.href = '/search';
+  }
+}
+</script>
+{% endblock %}
