@@ -14,7 +14,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
 DATA_FILE = os.path.join(os.path.dirname(__file__), 'data', 'listings.json')
 BASE_URL = os.environ.get('BASE_URL', 'http://localhost:5001')
 # Google AdSense パブリッシャーID (例: ca-pub-1234567890123456)
-ADSENSE_CLIENT = os.environ.get('ADSENSE_CLIENT', '')
+ADSENSE_CLIENT = os.environ.get('ADSENSE_CLIENT', 'ca-pub-5283099323704429')
 
 
 def load_listings():
