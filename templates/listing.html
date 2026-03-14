@@ -165,6 +165,21 @@
     </div>
   </div>
 
+  <!-- 広告スロット（詳細と関連出品の間） -->
+  <div class="ad-slot ad-slot-horizontal" style="margin-top:32px;">
+    {% if adsense_client %}
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="{{ adsense_client }}"
+         data-ad-slot="5566778899"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    {% else %}
+    <div class="ad-placeholder">広告</div>
+    {% endif %}
+  </div>
+
   <!-- 関連出品 -->
   {% if related %}
   <section class="related-section">

@@ -63,64 +63,23 @@
   </div>
 </div>
 
+<!-- 広告スロット①（ヘッダー下・横長バナー） -->
+<div class="ad-slot ad-slot-horizontal">
+  {% if adsense_client %}
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="{{ adsense_client }}"
+       data-ad-slot="1234567890"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  {% else %}
+  <div class="ad-placeholder">広告</div>
+  {% endif %}
+</div>
+
 <!-- メインコンテンツ -->
 <main class="main">
-
-  <!-- ===== おすすめ出品セクション ===== -->
-  {% if featured_listings %}
-  <div class="featured-section">
-    <div class="results-header">
-      <h2 class="section-title">⭐ おすすめ出品</h2>
-      <span class="featured-tag-label">PR</span>
-    </div>
-    <div class="listings-grid">
-      {% for item in featured_listings %}
-      {% set isFree = item.price_type == 'free' or item.price == 0 %}
-      {% set priceStr = '無料' if isFree else '¥' + '{:,}'.format(item.price) %}
-      {% set cond = item.condition.split('（')[0].strip() %}
-      {% set emoji = {'夏': '👔', '冬': '🧥', '体': '🩱', 'ブ': '🧣'}.get(item.type[0], '👘') %}
-      <a href="/listing/{{ item.id }}" class="listing-card listing-card-link featured-card">
-        <div class="featured-badge">⭐ おすすめ</div>
-        <div class="card-image-wrap">
-          {% if item.images and item.images[0] %}
-            <img src="{{ item.images[0] }}" alt="{{ item.title }}" loading="lazy">
-          {% else %}
-            <span>{{ emoji }}</span>
-          {% endif %}
-          <span class="card-badge {% if isFree %}free{% endif %}">{{ priceStr }}</span>
-        </div>
-        <div class="card-body">
-          <div class="card-school">{{ item.school }}</div>
-          <div class="card-title">{{ item.title }}</div>
-          <div class="card-meta">
-            <span class="tag">{{ item.size }}</span>
-            <span class="tag">{{ item.gender }}</span>
-            <span class="tag">{{ cond }}</span>
-          </div>
-          <div class="card-footer">
-            <span class="card-price {% if isFree %}free{% endif %}">{{ priceStr }}</span>
-            <span class="card-date">{{ item.created_at[:10] }}</span>
-          </div>
-        </div>
-      </a>
-      {% endfor %}
-    </div>
-  </div>
-  {% endif %}
-
-  <!-- ===== 広告スロット（Google AdSense） ===== -->
-  <!-- AdSense設定後にコメントを解除してください -->
-  <!--
-  <div class="ad-slot">
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
-         data-ad-slot="XXXXXXXXXX"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
-  -->
 
   <!-- 結果ヘッダー -->
   <div class="results-header">
@@ -160,7 +119,7 @@
     </a>
     {% endfor %}
 
-    {% if listings | length == 0 and featured_listings | length == 0 %}
+    {% if listings | length == 0 %}
     <div class="empty-state" style="grid-column:1/-1;text-align:center;padding:60px 20px;">
       <div style="font-size:48px;margin-bottom:16px;">📭</div>
       <h3 style="margin-bottom:8px;">まだ出品がありません</h3>
@@ -174,25 +133,19 @@
     <a href="/search" class="btn btn-outline btn-large">すべての出品を見る（{{ stats.listings }}件）</a>
   </div>
 
-  <!-- ===== おすすめ掲載PRバナー ===== -->
-  <div class="premium-banner">
-    <div class="premium-inner">
-      <div class="premium-icon">⭐</div>
-      <div class="premium-text">
-        <h3>出品をもっと目立たせたい方へ</h3>
-        <p>「おすすめ出品」に掲載すると、トップページの上部に表示され、早く売れやすくなります。<br>
-        <strong>¥500/週〜</strong>（PayPay・銀行振込対応）</p>
-      </div>
-      <div class="premium-action">
-        {% if contact_line %}
-        <a href="https://line.me/ti/p/{{ contact_line }}" class="btn btn-premium" target="_blank" rel="noopener">LINEで申し込む</a>
-        {% elif contact_email %}
-        <a href="mailto:{{ contact_email }}?subject=おすすめ掲載のお申し込み" class="btn btn-premium">メールで申し込む</a>
-        {% else %}
-        <a href="/post" class="btn btn-premium">まずは出品する</a>
-        {% endif %}
-      </div>
-    </div>
+  <!-- 広告スロット②（一覧と使い方の間） -->
+  <div class="ad-slot ad-slot-square">
+    {% if adsense_client %}
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="{{ adsense_client }}"
+         data-ad-slot="0987654321"
+         data-ad-format="rectangle"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    {% else %}
+    <div class="ad-placeholder">広告</div>
+    {% endif %}
   </div>
 
 </main>

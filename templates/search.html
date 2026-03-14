@@ -87,6 +87,21 @@
     <span class="results-count" id="resultsCount"></span>
   </div>
 
+  <!-- 広告スロット（検索結果の上） -->
+  <div class="ad-slot ad-slot-horizontal">
+    {% if adsense_client %}
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="{{ adsense_client }}"
+         data-ad-slot="1122334455"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    {% else %}
+    <div class="ad-placeholder">広告</div>
+    {% endif %}
+  </div>
+
   <!-- グリッド -->
   <div class="listings-grid" id="listingsGrid">
     <div class="loading-state"><div class="spinner"></div><p>読み込み中...</p></div>
