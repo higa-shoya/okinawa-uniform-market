@@ -13,6 +13,10 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), 'data', 'listings.json')
 BASE_URL = os.environ.get('BASE_URL', 'http://localhost:5001')
+ADMIN_TOKEN = os.environ.get('ADMIN_TOKEN', 'admin123')
+# おすすめ掲載の問い合わせ先（環境変数で設定）
+CONTACT_LINE = os.environ.get('CONTACT_LINE', '')
+CONTACT_EMAIL = os.environ.get('CONTACT_EMAIL', '')
 
 
 def load_listings():
@@ -35,19 +39,34 @@ def format_price(price, price_type):
     return f'¥{price:,}'
 
 
+def sort_listings(listings):
+    """おすすめ出品を先頭に、その後は新着順"""
+    listings.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+    listings.sort(key=lambda x: not x.get('featured', False))
+    return listings
+
+
 # ===== PAGES =====
 
 @app.route('/')
 def index():
     listings = load_listings()
-    listings.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+    sort_listings(listings)
     schools = sorted(set(l['school'] for l in listings))
+    featured_listings = [l for l in listings if l.get('featured')]
+    regular_listings = [l for l in listings if not l.get('featured')]
     stats = {
         'listings': len(listings),
         'schools': len(schools),
         'transactions': max(0, len(listings) - 2),
     }
-    return render_template('index.html', listings=listings[:12], schools=schools, stats=stats)
+    return render_template('index.html',
+        featured_listings=featured_listings,
+        listings=regular_listings[:12],
+        schools=schools,
+        stats=stats,
+        contact_line=CONTACT_LINE,
+        contact_email=CONTACT_EMAIL)
 
 
 @app.route('/search')
@@ -63,7 +82,6 @@ def search_page():
     listings = load_listings()
     schools = sorted(set(l['school'] for l in listings))
 
-    # Build SEO title
     parts = []
     if q:
         parts.append(q)
@@ -87,7 +105,6 @@ def listing_detail(listing_id):
     if not item:
         abort(404)
 
-    # Related listings (same school, excluding current)
     related = [l for l in listings if l['school'] == item['school'] and l['id'] != listing_id][:4]
 
     price_str = format_price(item['price'], item['price_type'])
@@ -118,7 +135,7 @@ def not_found(e):
 @app.route('/api/listings', methods=['GET'])
 def get_listings():
     listings = load_listings()
-    listings.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+    sort_listings(listings)
     return jsonify({'listings': listings, 'total': len(listings)})
 
 
@@ -163,6 +180,7 @@ def create_listing():
         'delivery': data.get('delivery', []),
         'location': data.get('location', ''),
         'images': data.get('images', []),
+        'featured': False,
         'created_at': datetime.now().isoformat(),
     }
 
@@ -192,6 +210,24 @@ def get_stats():
         'schools': schools,
         'transactions': max(0, len(listings) - 2),
     })
+
+
+@app.route('/api/admin/feature/<int:listing_id>', methods=['POST'])
+def admin_feature(listing_id):
+    """おすすめ出品の設定（管理者のみ）
+    使い方: POST /api/admin/feature/1
+    Body: {"token": "YOUR_ADMIN_TOKEN", "featured": true}
+    """
+    data = request.get_json() or {}
+    if data.get('token') != ADMIN_TOKEN:
+        return jsonify({'error': '認証エラー'}), 403
+    listings = load_listings()
+    item = next((l for l in listings if l['id'] == listing_id), None)
+    if not item:
+        return jsonify({'error': '出品が見つかりません'}), 404
+    item['featured'] = bool(data.get('featured', True))
+    save_listings(listings)
+    return jsonify({'success': True, 'id': listing_id, 'featured': item['featured']})
 
 
 if __name__ == '__main__':

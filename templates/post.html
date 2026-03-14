@@ -12,6 +12,38 @@
     <p class="page-sub">必要な情報を入力して出品しましょう</p>
   </div>
 
+  <!-- 出品例 -->
+  <div class="example-box">
+    <div class="example-box-toggle" onclick="toggleExample(this)">
+      <span>💡 良い出品例を見る（参考にしてください）</span>
+      <span class="example-arrow">▼</span>
+    </div>
+    <div class="example-content" style="display:none;">
+      <div class="example-grid">
+        <div class="example-item">
+          <div class="example-label">タイトル例</div>
+          <div class="example-value">那覇高校 夏服上下セット Mサイズ【良好・洗濯済み】</div>
+        </div>
+        <div class="example-item">
+          <div class="example-label">説明文例</div>
+          <div class="example-value">
+            3年間着用しました。目立つ汚れ・破れはありません。<br>
+            身長160cmが着用。サイズ感は標準的です。<br>
+            洗濯・アイロン済みで清潔な状態です。<br>
+            【セット内容】夏服上着×1、スカート×1<br>
+            【引き渡し】那覇市内での手渡し希望。郵送可（送料実費）<br>
+            【その他】制服一式揃えるのは大変なのでお役に立てれば嬉しいです。
+          </div>
+        </div>
+        <div class="example-item">
+          <div class="example-label">写真のポイント</div>
+          <div class="example-value">全体・タグのサイズ表記・気になる箇所（汚れ・傷など）を撮影すると問い合わせが増えます</div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="fillExample()">この例文をコピーして使う</button>
+    </div>
+  </div>
+
   <div class="form-container">
     <form id="postForm" onsubmit="submitPost(event)">
 
@@ -169,7 +201,7 @@
         </div>
         <div class="form-group">
           <label class="form-label required">説明文</label>
-          <textarea name="description" class="form-input form-textarea" placeholder="制服の状態・サイズ感・付属品・引き渡し方法など、詳しく書いてください" required rows="6" maxlength="500" oninput="document.getElementById('descCount').textContent=this.value.length"></textarea>
+          <textarea name="description" id="descriptionInput" class="form-input form-textarea" placeholder="例）3年間着用。目立つ汚れ・破れなし。身長160cmが使用。洗濯済みです。&#10;【セット内容】上着×1、スカート×1&#10;【引き渡し】那覇市内手渡し or 郵送可（送料実費）" required rows="6" maxlength="500" oninput="document.getElementById('descCount').textContent=this.value.length"></textarea>
           <div class="char-count"><span id="descCount">0</span>/500</div>
         </div>
       </div>
@@ -237,4 +269,21 @@
 
 {% block scripts %}
 <script src="/static/js/post.js"></script>
+<script>
+function toggleExample(el) {
+  const content = el.parentElement.querySelector('.example-content');
+  const arrow = el.querySelector('.example-arrow');
+  const open = content.style.display !== 'none';
+  content.style.display = open ? 'none' : 'block';
+  arrow.textContent = open ? '▼' : '▲';
+}
+function fillExample() {
+  const desc = document.getElementById('descriptionInput');
+  if (desc) {
+    desc.value = '3年間着用しました。目立つ汚れ・破れはありません。\n身長160cmが着用。サイズ感は標準的です。\n洗濯・アイロン済みで清潔な状態です。\n【セット内容】夏服上着×1、スカート×1\n【引き渡し】那覇市内での手渡し希望。郵送可（送料実費）';
+    document.getElementById('descCount').textContent = desc.value.length;
+    desc.focus();
+  }
+}
+</script>
 {% endblock %}
